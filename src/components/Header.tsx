@@ -23,7 +23,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img 
-              src="/lovable-uploads/5075e870-abd9-47e2-905e-3c9aa6192b83.png" 
+              src="/uploads/5075e870-abd9-47e2-905e-3c9aa6192b83.png" 
               alt="Enrich Employment Logo" 
               className="h-28 w-auto max-w-[400px] object-contain"
             />
