@@ -12,13 +12,15 @@ const PORT = process.env.PORT || 5000;
 // Security middleware
 app.use(helmet());
 
-// CORS configuration - allow multiple origins for development
+// CORS configuration - allow multiple origins for development and production
 app.use(cors({
   origin: [
     'http://localhost:5173', // Vite default
     'http://localhost:8080', // Your current frontend
     'http://localhost:3000', // React default
     'http://localhost:4173', // Vite preview
+    'https://enrichemployment.ca', // Production domain
+    'https://beamish-snickerdoodle-4a994a.netlify.app', // Netlify URL
     process.env.FRONTEND_URL // From environment variable
   ].filter(Boolean), // Remove any undefined values
   credentials: true
