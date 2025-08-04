@@ -16,8 +16,8 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  // API URL - will be replaced with environment variable in production
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  // API URL - Railway backend
+  const API_URL = 'https://enrich-website-production.up.railway.app';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
