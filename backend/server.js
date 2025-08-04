@@ -1,0 +1,212 @@
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const { body, validationResult } = require('express-validator');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Security middleware
+app.use(helmet());
+
+// CORS configuration - allow multiple origins for development
+app.use(cors({
+  origin: [
+    'http://localhost:5173', // Vite default
+    'http://localhost:8080', // Your current frontend
+    'http://localhost:3000', // React default
+    'http://localhost:4173', // Vite preview
+    process.env.FRONTEND_URL // From environment variable
+  ].filter(Boolean), // Remove any undefined values
+  credentials: true
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: {
+    error: 'Too many requests from this IP, please try again later.'
+  }
+});
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Contact form endpoint
+app.post('/api/contact', limiter, [
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be between 2 and 100 characters'),
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+  body('message')
+    .trim()
+    .isLength({ min: 10, max: 2000 })
+    .withMessage('Message must be between 10 and 2000 characters')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { name, email, message } = req.body;
+
+    // Check if email credentials are configured
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error('Email credentials not configured');
+      return res.status(500).json({
+        success: false,
+        message: 'Email service not configured. Please contact administrator.'
+      });
+    }
+
+    console.log('Creating Gmail transporter...');
+    
+    // Create email transporter for Gmail
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS // This should be your Gmail app password
+      }
+    });
+
+    // Verify transporter configuration
+    console.log('Verifying Gmail transporter...');
+    await transporter.verify();
+    console.log('Gmail transporter verified successfully');
+
+    // Email to Enrich Employment
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: 'info@enrichemployment.ca',
+      subject: `New Contact Form Submission from ${name}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #1B5D4F;">New Contact Form Submission</h2>
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong></p>
+            <div style="background-color: white; padding: 15px; border-radius: 5px; margin-top: 10px;">
+              ${message.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+          <p style="color: #666; font-size: 14px;">
+            This message was sent from the Enrich Employment contact form.
+          </p>
+        </div>
+      `
+    };
+
+    console.log('Sending notification email via Gmail...');
+    // Send email
+    await transporter.sendMail(mailOptions);
+    console.log('Notification email sent successfully via Gmail');
+
+    // Send confirmation email to user
+    const confirmationMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Thank you for contacting Enrich Employment',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #1B5D4F;">Thank you for contacting us!</h2>
+          <p>Dear ${name},</p>
+          <p>Thank you for reaching out to Enrich Employment. We have received your message and will get back to you within 24 hours.</p>
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #1B5D4F;">Your Message:</h3>
+            <div style="background-color: white; padding: 15px; border-radius: 5px;">
+              ${message.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+          <p>If you have any urgent inquiries, please call us at <strong>(905) 965-0448</strong>.</p>
+          <p>Best regards,<br>The Enrich Employment Team</p>
+        </div>
+      `
+    };
+
+    console.log('Sending confirmation email via Gmail...');
+    await transporter.sendMail(confirmationMailOptions);
+    console.log('Confirmation email sent successfully via Gmail');
+
+    res.status(200).json({
+      success: true,
+      message: 'Message sent successfully! We\'ll get back to you within 24 hours.'
+    });
+
+  } catch (error) {
+    console.error('Contact form error:', error);
+    
+    // Provide more specific error messages for Gmail
+    let errorMessage = 'Failed to send message. Please try again later.';
+    
+    if (error.code === 'EAUTH') {
+      errorMessage = 'Gmail authentication failed. Please check your app password. Make sure you generated an app password for "Mail" in your Google account settings.';
+    } else if (error.code === 'ECONNECTION') {
+      errorMessage = 'Unable to connect to Gmail server. Please try again later.';
+    } else if (error.code === 'ETIMEDOUT') {
+      errorMessage = 'Email request timed out. Please try again later.';
+    } else if (error.message && error.message.includes('Invalid login')) {
+      errorMessage = 'Invalid Gmail credentials. Please check your email and app password.';
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: errorMessage,
+      debug: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Enrich Employment API is running',
+    timestamp: new Date().toISOString(),
+    emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
+    emailUser: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}***@${process.env.EMAIL_USER.split('@')[1]}` : 'Not configured'
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!'
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Enrich Employment API server running on port ${PORT}`);
+  console.log(`📧 Email notifications enabled: ${process.env.EMAIL_USER ? 'Yes' : 'No'}`);
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    console.log(`📧 Using Gmail service for: ${process.env.EMAIL_USER}`);
+  } else {
+    console.log('⚠️  Warning: Email credentials not configured. Contact form will not work.');
+  }
+}); 
