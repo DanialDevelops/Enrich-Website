@@ -60,6 +60,10 @@ app.post('/api/contact', limiter, [
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email address'),
+  body('phone')
+    .trim()
+    .isLength({ min: 10, max: 20 })
+    .withMessage('Please provide a valid phone number'),
   body('message')
     .trim()
     .isLength({ min: 10, max: 2000 })
@@ -85,7 +89,7 @@ app.post('/api/contact', limiter, [
       });
     }
 
-    const { name, email, message } = req.body;
+    const { name, email, phone, message } = req.body;
 
     // Check if email credentials are configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -123,6 +127,7 @@ app.post('/api/contact', limiter, [
           <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
             <p><strong>Message:</strong></p>
             <div style="background-color: white; padding: 15px; border-radius: 5px; margin-top: 10px;">
               ${message.replace(/\n/g, '<br>')}

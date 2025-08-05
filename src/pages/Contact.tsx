@@ -11,6 +11,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +24,7 @@ const Contact = () => {
     e.preventDefault();
     
     // Basic validation
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.message) {
       toast({
         title: "Please fill in all fields",
         description: "All fields are required to submit your message.",
@@ -51,7 +52,7 @@ const Contact = () => {
           description: result.message,
         });
         // Reset form
-        setFormData({ name: "", email: "", message: "" });
+        setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
         toast({
           title: "Error",
@@ -153,6 +154,21 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                       className="h-12"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      className="h-12"
+                      placeholder="(905) 123-4567"
                       disabled={isSubmitting}
                     />
                   </div>
