@@ -146,23 +146,23 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-accent/10 rounded-full px-6 py-2 mb-6">
-              <Star className="w-5 h-5 text-accent" />
-              <span className="text-accent font-medium">Client Success Stories</span>
+          <div className="text-center mb-12 sm:mb-16">
+            <div className="inline-flex items-center space-x-2 bg-accent/10 rounded-full px-4 sm:px-6 py-2 mb-4 sm:mb-6">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
+              <span className="text-sm sm:text-base text-accent font-medium">Client Success Stories</span>
             </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-secondary mb-6 bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-4 sm:mb-6 bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
               What Our Clients Say
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Real feedback from businesses we've helped transform their workforce
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            <div className="relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center">
+            <div className="relative order-2 lg:order-1">
               <Carousel
                 opts={{
                   align: "start",
@@ -201,26 +201,26 @@ const Home = () => {
                   ].map((testimonial) => (
                     <CarouselItem key={testimonial.id}>
                       <Card className="bg-gradient-card border-0 shadow-hover h-full">
-                        <CardContent className="p-8 text-center h-full flex flex-col justify-between">
+                        <CardContent className="p-4 sm:p-6 lg:p-8 text-center h-full flex flex-col justify-between">
                           <div>
-                            <div className="flex justify-center mb-6">
+                            <div className="flex justify-center mb-4 sm:mb-6">
                               {[...Array(testimonial.stars)].map((_, i) => (
-                                <Star key={i} className="w-6 h-6 text-accent fill-accent" />
+                                <Star key={i} className="w-5 h-5 sm:w-6 sm:h-6 text-accent fill-accent" />
                               ))}
                             </div>
-                            <p className="text-lg text-foreground mb-8 italic leading-relaxed">
+                            <p className="text-sm sm:text-base lg:text-lg text-foreground mb-6 sm:mb-8 italic leading-relaxed">
                               {testimonial.text}
                             </p>
                           </div>
                           <div className="flex items-center justify-center space-x-3">
-                            <Avatar className="h-12 w-12">
-                              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+                              <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-sm sm:text-base">
                                 {testimonial.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="text-left">
-                              <div className="text-secondary font-bold text-lg">{testimonial.name}</div>
-                              <div className="text-muted-foreground">Verified Client</div>
+                              <div className="text-secondary font-bold text-base sm:text-lg">{testimonial.name}</div>
+                              <div className="text-muted-foreground text-sm sm:text-base">Verified Client</div>
                             </div>
                           </div>
                         </CardContent>
@@ -228,59 +228,59 @@ const Home = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-4 h-12 w-12 bg-white/90 hover:bg-white border-2 border-primary/20 hover:border-primary shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110" />
-                <CarouselNext className="right-4 h-12 w-12 bg-white/90 hover:bg-white border-2 border-primary/20 hover:border-primary shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110" />
+                <CarouselPrevious className="left-2 sm:left-4 h-10 w-10 sm:h-12 sm:w-12 bg-white/90 hover:bg-white border-2 border-primary/20 hover:border-primary shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110" />
+                <CarouselNext className="right-2 sm:right-4 h-10 w-10 sm:h-12 sm:w-12 bg-white/90 hover:bg-white border-2 border-primary/20 hover:border-primary shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110" />
               </Carousel>
             </div>
-            <div className="relative">
+            <div className="relative order-1 lg:order-2">
               <img 
                 src={partnershipImage} 
                 alt="Professional team collaboration and partnership" 
-                className="rounded-3xl shadow-hover w-full h-96 object-cover"
+                className="rounded-2xl sm:rounded-3xl shadow-hover w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-3xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-2xl sm:rounded-3xl"></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Worker Spotlight Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
-                <Users2 className="w-5 h-5 text-primary" />
-                <span className="text-primary font-medium">Professional Excellence</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 sm:px-6 py-2 mb-4 sm:mb-6">
+                <Users2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <span className="text-sm sm:text-base text-primary font-medium">Professional Excellence</span>
               </div>
-              <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
                 Skilled Professionals Ready to Work
               </h2>
-              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed">
                 Our team of qualified professionals is equipped with the skills and experience needed to meet your business requirements. From specialized technicians to administrative support, we provide the right talent for your specific needs.
               </p>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-foreground">Pre-screened and qualified candidates</span>
+                  <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                  <span className="text-sm sm:text-base text-foreground">Pre-screened and qualified candidates</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-foreground">Industry-specific expertise</span>
+                  <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                  <span className="text-sm sm:text-base text-foreground">Industry-specific expertise</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span className="text-foreground">Reliable and punctual professionals</span>
+                  <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                  <span className="text-sm sm:text-base text-foreground">Reliable and punctual professionals</span>
                 </div>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative order-1 lg:order-2">
               <img 
                 src={workerImage} 
                 alt="Professional worker demonstrating skills and expertise" 
-                className="rounded-3xl shadow-hover w-full h-96 object-cover"
+                className="rounded-2xl sm:rounded-3xl shadow-hover w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-3xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-2xl sm:rounded-3xl"></div>
             </div>
           </div>
         </div>
