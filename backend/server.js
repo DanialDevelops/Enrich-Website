@@ -9,15 +9,17 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security middleware
-app.use(helmet());
-
 // CORS configuration - allow all origins for now to debug
 app.use(cors({
   origin: true, // Allow all origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Security middleware (after CORS to avoid conflicts)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
 // Rate limiting
@@ -48,6 +50,15 @@ app.post('/api/contact', limiter, [
     .isLength({ min: 10, max: 2000 })
     .withMessage('Message must be between 10 and 2000 characters')
 ], async (req, res) => {
+  // Add explicit CORS headers
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
   try {
     // Check for validation errors
     const errors = validationResult(req);
@@ -189,6 +200,14 @@ app.get('/api/test-cors', (req, res) => {
     origin: req.headers.origin,
     timestamp: new Date().toISOString()
   });
+});
+
+// OPTIONS handler for contact endpoint
+app.options('/api/contact', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.status(200).end();
 });
 
 // Error handling middleware
