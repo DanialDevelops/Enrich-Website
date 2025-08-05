@@ -35,6 +35,21 @@ const limiter = rateLimit({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Root endpoint for testing
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Enrich Employment Backend is running!',
+    timestamp: new Date().toISOString(),
+    endpoints: [
+      '/api/test',
+      '/api/health', 
+      '/api/test-cors',
+      '/api/contact'
+    ]
+  });
+});
+
 // Contact form endpoint
 app.post('/api/contact', limiter, [
   body('name')
@@ -248,6 +263,13 @@ app.use('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Enrich Employment API server running on port ${PORT}`);
   console.log(`📧 Email notifications enabled: ${process.env.EMAIL_USER ? 'Yes' : 'No'}`);
+  console.log(`🌐 Server URL: https://enrich-website-production.up.railway.app`);
+  console.log(`📋 Available endpoints:`);
+  console.log(`   - GET  /api/test`);
+  console.log(`   - GET  /api/health`);
+  console.log(`   - GET  /api/test-cors`);
+  console.log(`   - POST /api/contact`);
+  console.log(`   - OPTIONS /api/contact`);
   if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     console.log(`📧 Using Gmail service for: ${process.env.EMAIL_USER}`);
   } else {
