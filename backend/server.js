@@ -182,12 +182,30 @@ app.post('/api/contact', limiter, [
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+  console.log('Health check endpoint hit');
+  console.log('Environment variables:', {
+    EMAIL_USER: process.env.EMAIL_USER ? 'Set' : 'Not set',
+    EMAIL_PASS: process.env.EMAIL_PASS ? 'Set' : 'Not set',
+    PORT: process.env.PORT || 5000
+  });
+  
   res.status(200).json({
     success: true,
     message: 'Enrich Employment API is running',
     timestamp: new Date().toISOString(),
     emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
-    emailUser: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}***@${process.env.EMAIL_USER.split('@')[1]}` : 'Not configured'
+    emailUser: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}***@${process.env.EMAIL_USER.split('@')[1]}` : 'Not configured',
+    port: process.env.PORT || 5000
+  });
+});
+
+// Simple test endpoint
+app.get('/api/test', (req, res) => {
+  console.log('Test endpoint hit');
+  res.status(200).json({
+    success: true,
+    message: 'Server is working!',
+    timestamp: new Date().toISOString()
   });
 });
 
